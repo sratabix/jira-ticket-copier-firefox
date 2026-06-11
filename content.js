@@ -86,10 +86,18 @@ function findCardTitleEl(keyEl) {
     node = node.parentElement;
     for (const selector of CARD_TITLE_SELECTORS) {
       const titleEl = node.querySelector(selector);
-      if (titleEl && titleEl.innerText.trim()) return titleEl;
+      if (titleEl && getCardTitle(titleEl)) return titleEl;
     }
   }
   return null;
+}
+
+function getCardTitle(titleEl) {
+  const clone = titleEl.cloneNode(true);
+  clone
+    .querySelectorAll('button, a, [role="button"]')
+    .forEach((el) => el.remove());
+  return clone.innerText.trim();
 }
 
 function addBoardCardButtons() {
@@ -98,7 +106,7 @@ function addBoardCardButtons() {
     const titleEl = findCardTitleEl(keyEl);
     if (!titleEl) return;
 
-    const title = titleEl.innerText.trim();
+    const title = getCardTitle(titleEl);
     const host = titleEl.parentElement;
     if (!key || !title || !host) return;
     if (host.querySelector(".jira-copier-card-btn")) return;
